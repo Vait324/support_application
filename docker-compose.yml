@@ -1,0 +1,59 @@
+version: '3.3'
+
+services:
+
+  redis:
+    image: redis:5-alpine
+
+  db:
+    image: postgres:12.4
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    env_file:
+      - ./.env
+    depends_on:
+      - redis
+  
+  web:
+    build: .
+    volumes:
+      - static_value:/code/static/
+      - media_value:/code/media/
+    restart: always
+    ports:
+      - 8000:8000
+    env_file:
+      - ./.env
+    depends_on:
+      - db
+
+  celery:
+    build: .
+    command: celery -A support_application worker -l info -P gevent
+    volumes:
+      - cel:/code/cel_async
+    env_file:
+      - ./.env
+    depends_on:
+       - redis
+       - db
+       - web
+
+  dashboard:
+    build: .
+    command: celery -A support_application flower
+    ports:
+      - 5555:5555
+    env_file:
+      - ./.env
+    depends_on:
+      - web
+      - redis
+      - celery
+
+
+volumes:
+  postgres_data:
+  static_value:
+  media_value:
+  cel:
