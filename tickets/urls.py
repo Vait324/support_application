@@ -1,17 +1,18 @@
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
-from .views import MessageApiView, StaffTicketsApiView, UserTicketsApiView
+from tickets.views import (MessageViewSet, StaffTicketsViewSet,
+                           UserTicketsViewSet)
 
 app_name = 'tickets'
 
 router = DefaultRouter()
 
-router.register('forstaff', StaffTicketsApiView, basename='forstaff')
-
+router.register('forstaff', StaffTicketsViewSet, basename='forstaff')
+router.register('tickets', UserTicketsViewSet, basename='tickets')
+router.register(r'tickets/(?P<ticket_id>\d+)/messages', MessageViewSet,
+                basename='messages')
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('tickets/', UserTicketsApiView.as_view()),
-    path('tickets/<int:id>/', MessageApiView.as_view())
 ]

@@ -23,7 +23,7 @@ def test_message_create(user2_client, create_tickets):
     ticket = create_tickets[0]
     messages = Message.objects.count()
     data = {'author': user2_client, 'ticket': ticket, 'text': 'Message'}
-    user2_client.post('/tickets/1/', data=data)
+    user2_client.post('/tickets/1/messages/', data=data)
     assert messages + 1 == Message.objects.count(), (
         'Ошибка при создании сообщения'
         )

@@ -5,11 +5,11 @@ from users.models import User
 
 class Ticket(models.Model):
     '''Тикет пользователя'''
-    CHOICES = (
-        ('open', 'open'),
-        ('closed', 'closed'),
-        ('frozen', 'frozen')
-    )
+    class StatusChoices(models.TextChoices):
+        OPEN = 'open'
+        CLOSED = 'closed'
+        FROZEN = 'frozen'
+
     title = models.CharField(
         max_length=50,
         help_text='Заголовок'
@@ -20,8 +20,8 @@ class Ticket(models.Model):
     )
     status = models.CharField(
         max_length=30,
-        choices=CHOICES,
-        default='open'
+        choices=StatusChoices.choices,
+        default=StatusChoices.OPEN
     )
     author = models.ForeignKey(
         User,
@@ -33,6 +33,7 @@ class Ticket(models.Model):
     class Meta:
         verbose_name = 'ticket'
         verbose_name_plural = 'tickets'
+        ordering = ('-date',)
 
     def __str__(self):
         return self.title
